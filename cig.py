@@ -1,11 +1,12 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
 
 class CIG:
     def __init__(self, G):
         self.G = G
         self.L = set()
-        
+
         #colorindo os vértices
         nx.set_node_attributes(self.G, 'gray', 'color')
     
@@ -24,7 +25,6 @@ class CIG:
             plt.ion()
             plt.pause(time)
             plt.ioff()
-    
 
     def infect(self, v):
         self.L.add(v)
@@ -49,13 +49,14 @@ class CIG:
         self.L = self.L.union(at)
     
     
+
     def start(self, version=1):
         #assumindo que a versão sempre será a normal
         turn = 1
         self.plotar()
         done = False
         player = ""
-
+        print(list(self.G.nodes))
         while self.L != set(self.G.nodes):
         
             if turn%2 != 0:
@@ -77,7 +78,7 @@ class CIG:
                 else:
                     print(player + " PERDEU O JOGO")
 
-                self.plotar(time = 2)
+                self.plotar()
             else:
                 self.plotar()
 
@@ -105,5 +106,9 @@ g2 = {'a': {'b', 'c', 'e'},
       'f': {'e', 'b'}
     } 
 
-jogo = CIG(nx.Graph(g))
+
+
+g3 = np.genfromtxt("entrada1.txt")
+print(g3)
+jogo = CIG(nx.from_numpy_array(g3))
 jogo.start()
