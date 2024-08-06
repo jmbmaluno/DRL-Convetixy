@@ -1,11 +1,13 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 class CIG:
     def __init__(self, G):
         self.G = G
         self.L = set()
+        self.log = []
 
         #colorindo os vértices
         nx.set_node_attributes(self.G, 'gray', 'color')
@@ -29,6 +31,8 @@ class CIG:
     def infect(self, v):
         self.L.add(v)
         self.update_L()
+        self.log.append(v)
+
         #marcando os vértices que estão infectados
         self.G.nodes[v]['color'] = 'red'
 
@@ -56,7 +60,6 @@ class CIG:
         self.plotar()
         done = False
         player = ""
-        print(list(self.G.nodes))
         while self.L != set(self.G.nodes):
         
             if turn%2 != 0:
@@ -64,11 +67,11 @@ class CIG:
             else:
                 player = "SEGUNDO JOGAGOR"
             
-            res = input(player + ", escolha algum vértice: ")
+            res = int(input(player + ", escolha algum vértice: "))
 
             while res in self.L:
                 print("NÂO PODE ESCOLHER VÉRTICES JÁ ROTULADOS")
-                res = input(player + ", escolha algum vértice: ")
+                res = int(input(player + ", escolha algum vértice: "))
             
             self.infect(res)
 
@@ -78,37 +81,14 @@ class CIG:
                 else:
                     print(player + " PERDEU O JOGO")
 
-                self.plotar()
-            else:
-                self.plotar()
+            self.plotar()
 
             turn = turn + 1
         
         
 
-g = {'a': {'b'},
-     'b': {'a', 'c'},
-     'c': {'b', 'd', 'e'},
-     'd': {'c'},
-     'e': {'c', 'i', 'f'},
-     'f': {'e', 'g', 'h'},
-     'g': {'f'},
-     'h': {'f'},
-     'i': {'e', 'j'},
-     'j': {'i'} 
-    }
-
-g2 = {'a': {'b', 'c', 'e'},
-      'b': {'a', 'f'},
-      'c': {'a', 'd'},
-      'd': {'c', 'e'},
-      'e': {'a', 'f', 'd'},
-      'f': {'e', 'b'}
-    } 
-
-
-
-g3 = np.genfromtxt("entrada1.txt")
-print(g3)
-jogo = CIG(nx.from_numpy_array(g3))
-jogo.start()
+for g in os.listdir("entradas"):
+   grafo = np.genfromtxt("entradas/" + g)
+   jogo = CIG(nx.from_numpy_array(grafo))
+   jogo.start()
+   print(jogo.log)
