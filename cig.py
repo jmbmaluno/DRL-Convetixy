@@ -12,7 +12,7 @@ class CIG:
         #colorindo os vértices
         nx.set_node_attributes(self.G, 'gray', 'color')
     
-    def plotar(self, final=None, time=0.5):
+    def plotar(self, final=False, time=0.5):
         plt.clf()
         nx.draw(self.G, 
                 pos=nx.kamada_kawai_layout(self.G), 
