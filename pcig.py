@@ -2,15 +2,29 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import random
 
-class CIG:
+class PCIG:
     def __init__(self, G):
         self.G = G
         self.L = set()
         self.log = []
+        self.alice = []
+        self.bob = []
 
         #colorindo os vértices
         nx.set_node_attributes(self.G, 'gray', 'color')
+        
+        for i in self.G:
+            print(type(i))
+            if random.randint(0,1) == 0:
+                self.G.nodes[i]['color'] = 'blue'
+                self.alice.append(i)
+            else:
+                self.G.nodes[i]['color'] = 'red'
+                self.bob.append(i)
+        
+
     
     def plotar(self, final=False, time=0.5):
         plt.clf()
@@ -36,6 +50,11 @@ class CIG:
         #marcando os vértices que estão infectados
         self.G.nodes[v]['color'] = 'purple'
 
+        if v in self.alice:
+            self.alice.remove(v)
+        if v in self.bob:
+            self.bob.remove(v)
+
 
     def update_L(self):
         #f2(L) = Ic(L)
@@ -47,15 +66,17 @@ class CIG:
                 if u != v:
                     for P in nx.all_shortest_paths(self.G, source = v, target=u):
                         for k in P:
+                            if k in self.alice:
+                                self.alice.remove(k)
+                            if k in self.bob:
+                                self.bob.remove(k)
+
                             self.G.nodes[k]['color'] = 'purple'
                             at.add(k)
         
         self.L = self.L.union(at)
+    
 
-    
-    def teste(self):
-        print(self.G.nodes)
-    
 
     def start(self, version=1):
         #assumindo que a versão sempre será a normal
@@ -63,8 +84,9 @@ class CIG:
         self.plotar()
         done = False
         player = ""
-        while self.L != set(self.G.nodes):
-        
+        while self.L != set(self.G.nodes) or not(not self.alice) or not(not self.bob):
+            print(self.bob)
+            print(self.alice)
             if turn%2 != 0:
                 player = "PRIMEIRO JOGAGOR"
             else:
@@ -78,13 +100,14 @@ class CIG:
             
             self.infect(res)
 
-            if self.L == set(self.G.nodes):
+            if self.L == set(self.G.nodes) or not self.alice or not self.bob:
                 if version==1:
                     print(player + " VENCEU O JOGO")
+                    break
                 else:
                     print(player + " PERDEU O JOGO")
+                    break
 
             self.plotar()
-            self.teste()
 
             turn = turn + 1
